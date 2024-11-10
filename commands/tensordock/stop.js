@@ -26,15 +26,16 @@ module.exports = {
         //     return;
         // }
         // stop
-        const stopRes = await tensordock.stop(server_id);
-        if (stopRes === false){
-            // クライアントから指定したユーザーを取得
+        const res = await tensordock.stop(server_id);
+        if (res.success === false){
+            // 管理者にメッセージを送信
             const user = await interaction.client.users.fetch(myDiscordId);
-            const tensorDockUrl = 'https://dashboard.tensordock.com/list'
-            await user.send(`serverの停止二失敗しました。\n server_id: ${server_id} \n${tensorDockUrl}`);
-            await interaction.reply(`stopに失敗しました。\n 管理者にメッセージを送信しました。`);
+            const dashboardUrl = `https://dashboard.tensordock.com/manage/${server_id}/`;
+            await user.send(`serverの停止に失敗しました。\n ${res.error} \n server_id: ${server_id}` + `\n dashboard: ${dashboardUrl}`);
+            await interaction.reply(`stopに失敗しました。${res.error}`);
             return;
         }
-        await interaction.reply(`stopしました。`);
+        await interaction.reply(`stopしました。\n\`\`\`${server_id}\`\`\``);
+
     },
 };

@@ -11,40 +11,43 @@ class TensorDock {
     // booleanを返す
     async test (param){
         const endpoint = 'auth/test';
-        const responseJson = await this.sendRequest(endpoint, param);
+        const res = await this.sendRequest(endpoint, param);
         // success keyを取得
-        const success = responseJson.success;
-        return responseJson;
+        if (res.success === false){
+            return res.error;
+        }
+        return res.success;
     }
 
     // booleanを返す
     async start (server_id){
         const endpoint = 'client/start/single';
         const param = {server: server_id};
-        const responseJson = await this.sendRequest(endpoint, param);
-        // success keyを取得
-        const success = responseJson.success;
-        return responseJson;
+        const res = await this.sendRequest(endpoint, param);
+        if (res.success === false){
+            return res.error;
+        }
+        return res.success;
     }
 
     // booleanを返す
     async stop (server_id){
         const endpoint = 'client/stop/single';
         const param = {server: server_id};
-        const responseJson = await this.sendRequest(endpoint, param);
-        // success keyを取得
-        const success = responseJson.success;
-        return responseJson;
+        const res = await this.sendRequest(endpoint, param);
+        return res;
     }
 
     // booleanを返す
     async bid_price (server_id, price){
         const endpoint = 'client/spot/validate/existing';
         const param = {server: server_id, price: price};
-        const responseJson = await this.sendRequest(endpoint, param);
-        // success keyを取得
-        const success = responseJson.success;
-        return responseJson
+        const res = await this.sendRequest(endpoint, param);
+        if (res.success === false){
+            return res.error;
+        }
+        const success = res.success;
+        return res.success
 
     }
 
@@ -57,18 +60,19 @@ class TensorDock {
     // startとstop時に使用する
     async modify (param){
         const endpoint = 'client/modify/single';
-        const responseJson = await this.sendRequest(endpoint, param);
-        // success keyを取得
-        const success = responseJson.success;
-        return responseJson;
+        const res = await this.sendRequest(endpoint, param);
+        if (res.success === false){
+            return res.error;
+        }
+        return res.success;
     }
 
     // server_mapをjsonで返す
     async list (){
         const endpoint = 'client/list';
         const res = await this.sendRequest(endpoint, {});
-        if (res === false){
-            return false;
+        if (res.success === false){
+            return res.error;
         }
         // {server_id1: {id: server_id1, name: server_name1}, server_id2: {id: server_id2, name: server_name2}}
         return res.virtualmachines;
@@ -79,8 +83,8 @@ class TensorDock {
         const endpoint = 'client/get/single';
         const param = {server: server_id};
         const res = await this.sendRequest(endpoint, param);
-        if (res === false){
-            return false;
+        if (res.success === false){
+            return res.error;
         }
         // {
         //     "cost": 0.1,
@@ -126,15 +130,17 @@ class TensorDock {
             // resのtype
             // jsonの中の"success" keyを取得
             if (res.data.success === false){
-                console.log('error',res.data);
-                return false;
+                // console.log('error',res);
+                return res.data;
             }
-            console.log('success',res.data);
+            // console.log('success',res);
             // json自体を返す
             return res.data;
         } catch (error) {
-            console.error('error',error);
-            return false
+            // stopがすでに止まっている場合などもここに入ってしまう
+            // console.error('handling error',error);
+            console.log('error',error.response);
+            return error.response.data;
         }
 
     }
