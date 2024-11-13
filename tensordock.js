@@ -33,9 +33,11 @@ class TensorDock {
     // booleanを返す
     async stop (server_id){
         const endpoint = 'client/stop/single';
-        const param = {server: server_id};
-        const res = await this.sendRequest(endpoint, param);
-        return res;
+        const param = {
+            server: server_id,
+            disassociate_resources: "true", // gpuを解放する
+        };
+        return await this.sendRequest(endpoint, param);
     }
 
     // booleanを返す
@@ -124,6 +126,7 @@ class TensorDock {
         const api_url = api_base_url + endpoint;
         // 成功化どうかを判定、成功ならresponseを返す
         try {
+            console.log('sending request to:',api_url);
             const res = await axios.post(api_url, form, {
                 headers: form.getHeaders(),
             });
@@ -133,14 +136,19 @@ class TensorDock {
                 // console.log('error',res);
                 return res.data;
             }
-            // console.log('success',res);
+            console.log('success',res);
             // json自体を返す
             return res.data;
         } catch (error) {
+            // errorの種類をしっかり場合分けしていく必要がある。
+            // 1.axiousのエラー
+            // 2.サーバー側のエラー
+            // 3.リクエストが通らないエラー
             // stopがすでに止まっている場合などもここに入ってしまう
             // console.error('handling error',error);
-            console.log('error',error.response);
-            return error.response.data;
+            // console.log('error',error.response);
+            // res.success = falseを返す
+            return {success: false, error: error};
         }
 
     }
