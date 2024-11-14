@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { TensorDock } = require('../../tensordock.js');
+const { TensorDock } = require('../../lib/tensordock.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -27,11 +27,15 @@ module.exports = {
         //     return;
         // }
         // start
-        const start_res = await tensordock.start(server_id);
-        if (start_res === false){
-            await interaction.reply(`startに失敗しました。`);
+        const res = await tensordock.start(server_id);
+        if (res.success === false){
+            await interaction.reply(`startに失敗しました。\n${res.error}`);
             return;
         }
+        // sshで接続し、cd /var/www/cloneComfyUi/ docker compose up --detachを実行
+        // 結果を待ち、成功したら返信
+        const sshRes = await ssh.execute('cd /var/www/cloneComfyUi/ && docker compose up --detach');
+
         await interaction.reply(`startしました。\n\`\`\`${server_id}\`\`\``);
     },
 };

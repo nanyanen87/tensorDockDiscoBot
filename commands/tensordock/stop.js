@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { TensorDock } = require('../../tensordock.js');
+const { TensorDock } = require('../../lib/tensordock.js');
 const myDiscordId = process.env.MY_DISCORD_ID;
 
 module.exports = {

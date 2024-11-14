@@ -1,11 +1,20 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { TensorDock } = require('../../tensordock.js');
+const { TensorDock } = require('../../lib/tensordock.js');
+const { SshClient } = require('../../lib/ssh.js');
 // server_name [status: $status]を返す
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('list')
         .setDescription('使用できるserverのリストを表示します'),
     async execute(interaction) {
+        // ssh接続test
+        interaction.reply({ content: '処理中...', ephemeral: true }); // まず応答を返す
+        // 長時間かかる処理
+
+        const ssh = new SshClient();
+        await ssh.connect();
+
+        await ssh.disconnect();
 
         const tensordock = new TensorDock();
         const serversMap = await tensordock.list();
@@ -17,8 +26,7 @@ module.exports = {
             const status = serversMap[serverId].status;
             text += `\n\`\`\`${serverId}\`\`\`: ${status}\n`;
         }
-
-        await interaction.reply(`${text}`);
+        await interaction.followUp(`${text}`);
     },
 };
 

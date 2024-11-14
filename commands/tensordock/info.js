@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { TensorDock } = require('../../tensordock.js');
+const { TensorDock } = require('../../lib/tensordock.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('info')
