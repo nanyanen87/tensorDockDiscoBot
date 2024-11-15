@@ -20,7 +20,11 @@ module.exports = {
             const status = serversMap[serverId].status;
             text += `\n\`\`\`${serverId}\`\`\`: ${status}\n`;
         }
-        await interaction.followUp(`${text}`);
+        await interaction.followUp({
+            content: `${text}`,
+            ephemeral: false,
+        });
+
     },
 };
 

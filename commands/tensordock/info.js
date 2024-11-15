@@ -18,6 +18,9 @@ module.exports = {
             const value = server_info[key];
             text += `${key}: ${JSON.stringify(value)}\n`;
         }
-        await interaction.reply(`${text}`);
+        await interaction.reply({
+            content: `${text}`,
+            ephemeral: true,
+        });
     },
 };

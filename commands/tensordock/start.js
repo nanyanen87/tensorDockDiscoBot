@@ -31,18 +31,31 @@ module.exports = {
         // start
         const res = await tensordock.start(server_id);
         if (res.success === false){
-            await interaction.reply(`startに失敗しました。\n${res.error}`);
+            await interaction.reply({
+                content: `startに失敗しました。\n${res.error}`,
+                ephemeral: false,
+            });
+
             return;
         }
-        await interaction.followUp(`startしました...comfyUiを起動します...`);
+        await interaction.followUp(
+            {
+                content: `startしました...comfyUiを起動します...`,
+                ephemeral: true
+            }
+        );
+
         // sshで接続し、cd /var/www/cloneComfyUi/ docker compose up --detachを実行
         const ssh = new SshClient();
         await ssh.connect();
-        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
-        const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
+        const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
+        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
         console.log(sshRes);
         await ssh.disconnect();
 
-        await interaction.followUp(`comfyUiを起動しました。\n\`\`\`${server_id}\`\`\``);
+        await interaction.followUp({
+            content: `comfyUiを起動しました。\n\`\`\`${server_id}\`\`\``,
+            ephemeral: false
+        });
     },
 };

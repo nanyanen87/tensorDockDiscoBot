@@ -31,7 +31,10 @@ module.exports = {
             const user = await interaction.client.users.fetch(myDiscordId);
             const dashboardUrl = `https://dashboard.tensordock.com/manage/${serverId}/`;
             await user.send(`serverの停止に失敗しました。\n ${stopRes.error} \n serverId: ${serverId}` + `\n dashboard: ${dashboardUrl}`);
-            await interaction.followUp(`stopに失敗しました。${stopRes.error}`);
+            await interaction.followUp({
+                content: `serverの停止に失敗しました。${stopRes.error}`,
+                ephemeral: false,
+            });
             return;
         } else {
             // サーバーは停止している
@@ -39,7 +42,10 @@ module.exports = {
             // リソースを開放する
             const modifyRes = await tensordock.modify(stopParam);
             if (modifyRes.success === true){
-                await interaction.followUp(`リソースを解放しました。\n\`\`\`${serverId}\`\`\``);
+                await interaction.followUp({
+                    content: `serverを停止しました...リソースを解放しました。\n\`\`\`${serverId}\`\`\``,
+                    ephemeral: false,
+                });
                 return;
             } else {
                 // 開放に失敗した場合
@@ -47,7 +53,10 @@ module.exports = {
                 // const user = await interaction.client.users.fetch(myDiscordId);
                 // const dashboardUrl = `https://dashboard.tensordock.com/manage/${serverId}/`;
                 // await user.send(`リソースの解放に失敗しました。\n ${modifyRes.error} \n serverId: ${serverId}` + `\n dashboard: ${dashboardUrl}`);
-                await interaction.followUp(`リソースの解放に失敗しました。${modifyRes.error}`);
+                await interaction.followUp({
+                    content: `リソースの解放に失敗しました。${modifyRes.error}`,
+                    ephemeral: false,
+                });
                 return;
             }
         }
