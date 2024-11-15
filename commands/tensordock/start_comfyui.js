@@ -21,9 +21,9 @@ module.exports = {
         // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
         console.log(sshRes);
         await ssh.disconnect();
-
+        const res = JSON.stringify(sshRes);
         await interaction.followUp({
-            content: `docker psを実行しました。\n\`\`\`${sshRes}\`\`\``,
+            content: `docker psを実行しました。\n\`\`\`${res}\`\`\``,
             ephemeral: false
         })
     },

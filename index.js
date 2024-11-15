@@ -14,6 +14,11 @@ const client = new Client(
     }
 );
 
+// commandのデプロイ
+require('./deploy-commands.js');
+
+
+
 // hello world
 client.on('messageCreate', message => {
     if(message.author.bot) return; //BOTのメッセージには反応しない

@@ -31,7 +31,7 @@ module.exports = {
         // start
         const res = await tensordock.start(server_id);
         if (res.success === false){
-            await interaction.reply({
+            await interaction.followUp({
                 content: `startに失敗しました。\n${res.error}`,
                 ephemeral: false,
             });
