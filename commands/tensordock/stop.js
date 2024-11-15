@@ -8,7 +8,7 @@ module.exports = {
         .addStringOption(option => option.setName('server_id').setDescription('server_id').setRequired(true))
         .setDescription('serverをstopします。'),
     async execute(interaction) {
-        interaction.reply({ content: '処理中...', ephemeral: true }); // まず応答を返す
+        interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
 
         const tensordock = new TensorDock();
         const serverId = interaction.options.getString('server_id');

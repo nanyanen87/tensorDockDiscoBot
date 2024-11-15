@@ -7,7 +7,7 @@ module.exports = {
         .setName('list')
         .setDescription('使用できるserverのリストを表示します'),
     async execute(interaction) {
-        interaction.reply({ content: '処理中...', ephemeral: true }); // まず応答を返す
+        interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
 
 
         const tensordock = new TensorDock();
