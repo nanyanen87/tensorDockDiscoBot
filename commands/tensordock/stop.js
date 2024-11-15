@@ -44,9 +44,9 @@ module.exports = {
             } else {
                 // 開放に失敗した場合
                 // 管理者にメッセージを送信
-                const user = await interaction.client.users.fetch(myDiscordId);
-                const dashboardUrl = `https://dashboard.tensordock.com/manage/${serverId}/`;
-                await user.send(`リソースの解放に失敗しました。\n ${modifyRes.error} \n serverId: ${serverId}` + `\n dashboard: ${dashboardUrl}`);
+                // const user = await interaction.client.users.fetch(myDiscordId);
+                // const dashboardUrl = `https://dashboard.tensordock.com/manage/${serverId}/`;
+                // await user.send(`リソースの解放に失敗しました。\n ${modifyRes.error} \n serverId: ${serverId}` + `\n dashboard: ${dashboardUrl}`);
                 await interaction.followUp(`リソースの解放に失敗しました。${modifyRes.error}`);
                 return;
             }
