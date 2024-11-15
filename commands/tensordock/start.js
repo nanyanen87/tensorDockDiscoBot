@@ -36,13 +36,13 @@ module.exports = {
         }
         await interaction.followUp(`startしました...comfyUiを起動します...`);
         // sshで接続し、cd /var/www/cloneComfyUi/ docker compose up --detachを実行
-        // 長時間かかる処理
+        const ssh = new SshClient();
+        await ssh.connect();
+        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
+        const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
+        console.log(sshRes);
+        await ssh.disconnect();
 
-        // const ssh = new SshClient();
-        // await ssh.connect();
-        // const sshRes = await ssh.execute('cd /var/www/cloneComfyUi/ && docker compose up --detach');
-        // await ssh.disconnect();
-        //
-        // await interaction.reply(`comfyUiを起動しました。\n\`\`\`${server_id}\`\`\``);
+        await interaction.followUp(`comfyUiを起動しました。\n\`\`\`${server_id}\`\`\``);
     },
 };
