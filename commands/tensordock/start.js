@@ -54,7 +54,7 @@ module.exports = {
         await ssh.disconnect();
 
         await interaction.followUp({
-            content: `comfyUiを起動しました。\n\`\`\`${server_id}\`\`\``,
+            content: `comfyUiを起動しました。\n\`\`\`comfyui.nanyanen.net\`\`\``,
             ephemeral: false
         });
     },
