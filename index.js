@@ -1,10 +1,16 @@
 // Require the necessary discord.js classes
 const dotenv = require('dotenv');
-dotenv.config();
+const env = process.env.NODE_ENV || 'dev';
+dotenv.config({path: `./.env.${env}`});
+
+
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+
+// 環境
 const token = process.env.DISCORD_TOKEN;
+
 const client = new Client(
     { intents: [
             GatewayIntentBits.Guilds,
