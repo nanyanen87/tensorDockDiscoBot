@@ -54,7 +54,7 @@ module.exports = {
         await interaction.followUp(
             {
                 content: `startしました...start-comfyuiコマンドを実行してください。\n\`\`\`${serverId}\`\`\``,
-                ephemeral: true
+                ephemeral: false
             }
         );
 

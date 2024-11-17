@@ -8,7 +8,7 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('start-comfyui')
         .addStringOption(option => option.setName('server_id').setDescription('server_id').setRequired(true))
-        .setDescription('docker psを実行します。'),
+        .setDescription('comfyuiを起動します。'),
     async execute(interaction) {
         interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
 
