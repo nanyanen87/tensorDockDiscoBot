@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { TensorDock } = require('../../lib/tensordock.js');
-const { SshClient } = require('../../lib/ssh.js');
+const { ServerDB } = require('../../lib/db.js');
 // server_name [status: $status]を返す
 module.exports = {
     data: new SlashCommandBuilder()
@@ -9,9 +9,15 @@ module.exports = {
     async execute(interaction) {
         interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
 
-
         const tensordock = new TensorDock();
         const serversMap = await tensordock.list();
+
+        // dbに保存
+        const serverDB = new ServerDB();
+        for (const serverId in serversMap) {
+            serverDB.saveServer(serverId, serversMap[serverId]);
+        }
+
         const serverIds = Object.keys(serversMap);
         let text = '';
         // serverId: 稼働中/停止中

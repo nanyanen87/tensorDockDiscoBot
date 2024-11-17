@@ -1,0 +1,47 @@
+{
+  "servers": {
+    "073072fd-40c1-4618-ba76-21367c3fddf0": {
+      "city": "Eygelshoven",
+      "compute_price": 0.181,
+      "cost": 0.181,
+      "country": "Netherlands",
+      "cpu_threadscount": 4,
+      "dedicated_ip_address": null,
+      "default_user": "user",
+      "deployment": {
+        "status": "Pending",
+        "timestamp_completion": null,
+        "timestamp_failure": null
+      },
+      "hostname": "073072fd-40c1-4618-ba76-21367c3fddf0",
+      "hostnode": "6d622e27-4bdb-4de5-9b8e-ab217ce3c8fe",
+      "ip_address": "206.168.82.14",
+      "location": "7d761f77-bfee-44c5-81fb-7770ce6471d6",
+      "name": "My TensorDock Server",
+      "operating_system": "TensorML 20 PyTorch",
+      "port_forwards": {
+        "47906": "8188",
+        "47979": "22",
+        "47980": "3389",
+        "47981": "8888",
+        "47982": "9090",
+        "47983": "3000"
+      },
+      "specs": {
+        "gpu": {
+          "amount": 1,
+          "type": "l4-pcie-24gb"
+        },
+        "ram": 12,
+        "storage": 100,
+        "vcpus": 4
+      },
+      "state": "Limburg",
+      "status": "Running",
+      "storage_price": 0.0075,
+      "timestamp_creation": "Sun, 03 Nov 2024 07:16:59 GMT",
+      "total_price": 0.1885,
+      "type": "spot"
+    }
+  }
+}

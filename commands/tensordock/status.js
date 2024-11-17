@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { TensorDock } = require('../../lib/tensordock.js');
+const { TensorDock,getSshParam } = require('../../lib/tensordock.js');
 const {SshClient} = require("../../lib/ssh");
+const {ServerDB} = require("../../lib/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,10 +13,19 @@ module.exports = {
 
         const tensordock = new TensorDock();
         const server_id = interaction.options.getString('server_id');
-        // todo server_idからsshのhostとportを取得する必要がある。
-        // start
-
-        const ssh = new SshClient();
+        // db　にidがあるか確認し、あればそこから取得なければtensordockから取得
+        const serverDB = new ServerDB();
+        let serverInfo;
+        if (!serverDB.hasServer(server_id)){
+            serverInfo = await tensordock.detail(server_id);
+            serverDB.saveServer(server_id, serverInfo);
+        } else {
+            serverInfo = serverDB.getServer(server_id);
+        }
+        const param = getSshParam(serverInfo);
+        console.log(param.port);
+        console.log(param.host);
+        const ssh = new SshClient(param);
         await ssh.connect();
         const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
         // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');

@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
-const { TensorDock } = require('../../lib/tensordock.js');
+const { TensorDock,getSshParam } = require('../../lib/tensordock.js');
 const {SshClient} = require("../../lib/ssh");
+const {ServerDB} = require("../../lib/db");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -12,7 +13,17 @@ module.exports = {
 
         const tensordock = new TensorDock();
         const server_id = interaction.options.getString('server_id');
-        // const serverInfo = await tensordock.detail(server_id);
+
+        // db　にidがあるか確認し、あればそこから取得なければtensordockから取得
+        const serverDB = new ServerDB();
+        let serverInfo;
+        if (!serverDB.hasServer(server_id)){
+            serverInfo = await tensordock.detail(server_id);
+            serverDB.saveServer(server_id, serverInfo);
+        } else {
+            serverInfo = serverDB.getServer(server_id);
+        }
+
         // const startParam = {
         //     server: serverInfo.hostnode,
         //     gpu_model: serverInfo.specs.gpu.type,
@@ -27,6 +38,7 @@ module.exports = {
         //     await interaction.reply(`リソースの取得に失敗しました。\n${res.error}`);
         //     return;
         // }
+
 
         // start
         const res = await tensordock.start(server_id);
@@ -46,7 +58,8 @@ module.exports = {
         );
 
         // sshで接続し、cd /var/www/cloneComfyUi/ docker compose up --detachを実行
-        const ssh = new SshClient();
+        const param = getSshParam(serverInfo);
+        const ssh = new SshClient(param);
         await ssh.connect();
         const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
         // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
