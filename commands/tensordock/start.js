@@ -73,14 +73,13 @@ module.exports = {
             return;
         }
 
-
         const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
         // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
         console.log(sshRes);
         await ssh.disconnect();
 
         await interaction.followUp({
-            content: `comfyUiを起動しました。https:/${comfyuiDomain}\n２分ほどかかります。`,
+            content: `comfyUiを起動しました。https://${comfyuiDomain}\n２分ほどかかります。`,
             ephemeral: false
         });
     },

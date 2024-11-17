@@ -24,8 +24,6 @@ module.exports = {
             serverInfo = serverDB.getServer(serverId);
         }
         const param = getSshParam(serverInfo);
-        console.log(param.port);
-        console.log(param.host);
         const ssh = new SshClient(param);
         await ssh.connect();
         const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
