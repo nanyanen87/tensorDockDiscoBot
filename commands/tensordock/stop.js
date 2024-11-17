@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { TensorDock } = require('../../lib/tensordock.js');
+const {ServerDB} = require("../../lib/db");
 const myDiscordId = process.env.MY_DISCORD_ID;
 
 module.exports = {
@@ -12,7 +13,16 @@ module.exports = {
 
         const tensordock = new TensorDock();
         const serverId = interaction.options.getString('server_id');
-        const serverInfo = await tensordock.detail(serverId);
+        // db　にidがあるか確認し、あればそこから取得なければtensordockから取得
+        const serverDB = new ServerDB();
+        let serverInfo;
+        if (!serverDB.hasServer(serverId)){
+            serverInfo = await tensordock.detail(serverId);
+            serverDB.saveServer(serverId, serverInfo);
+        } else {
+            serverInfo = serverDB.getServer(serverId);
+        }
+        console.log(serverInfo);
         const stopParam = {
             server: serverInfo.hostnode,
             gpu_model: serverInfo.specs.gpu.type,
