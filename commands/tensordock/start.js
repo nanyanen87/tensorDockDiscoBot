@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('discord.js');
 const { TensorDock,getSshParam } = require('../../lib/tensordock.js');
 const {SshClient} = require("../../lib/ssh");
 const {ServerDB} = require("../../lib/db");
+const comfyuiDomain = process.env.COMFYUI_DOMAIN;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -61,13 +62,25 @@ module.exports = {
         const param = getSshParam(serverInfo);
         const ssh = new SshClient(param);
         await ssh.connect();
+        // comfyuiの起動を確認
+        const resDockerPs = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
+        // outputにmycomfyuiという文字列があれば起動していると判断
+        if (resDockerPs.output.includes('mycomfyui')){
+            await interaction.followUp({
+                content: `comfyUiはすでに起動しています。https:/${comfyuiDomain}\n起動して２分ほどかかります。`,
+                ephemeral: false
+            });
+            return;
+        }
+
+
         const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
         // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
         console.log(sshRes);
         await ssh.disconnect();
 
         await interaction.followUp({
-            content: `comfyUiを起動しました。\n\`\`\`comfyui.nanyanen.net\`\`\``,
+            content: `comfyUiを起動しました。https:/${comfyuiDomain}\n２分ほどかかります。`,
             ephemeral: false
         });
     },
