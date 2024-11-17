@@ -67,7 +67,7 @@ module.exports = {
         // // outputにmycomfyuiという文字列があれば起動していると判断
         // if (resDockerPs.output.includes('mycomfyui')){
         //     await interaction.followUp({
-        //         content: `comfyUiはすでに起動しています。https:/${comfyuiDomain}\n起動して２分ほどかかります。`,
+        //         content: `comfyUiはすでに起動しています。https://${comfyuiDomain}\n起動して２分ほどかかります。`,
         //         ephemeral: false
         //     });
         //     return;
