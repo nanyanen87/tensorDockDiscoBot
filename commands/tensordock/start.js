@@ -13,16 +13,16 @@ module.exports = {
         interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
 
         const tensordock = new TensorDock();
-        const server_id = interaction.options.getString('server_id');
+        const serverId = interaction.options.getString('server_id');
 
         // db　にidがあるか確認し、あればそこから取得なければtensordockから取得
         const serverDB = new ServerDB();
         let serverInfo;
-        if (!serverDB.hasServer(server_id)){
-            serverInfo = await tensordock.detail(server_id);
-            serverDB.saveServer(server_id, serverInfo);
+        if (!serverDB.hasServer(serverId)){
+            serverInfo = await tensordock.detail(serverId);
+            serverDB.saveServer(serverId, serverInfo);
         } else {
-            serverInfo = serverDB.getServer(server_id);
+            serverInfo = serverDB.getServer(serverId);
         }
 
         // const startParam = {
@@ -42,7 +42,7 @@ module.exports = {
 
 
         // start
-        const res = await tensordock.start(server_id);
+        const res = await tensordock.start(serverId);
         if (res.success === false){
             await interaction.followUp({
                 content: `startに失敗しました。\n${res.error}`,
@@ -53,34 +53,34 @@ module.exports = {
         }
         await interaction.followUp(
             {
-                content: `startしました...comfyUiを起動します...`,
+                content: `startしました...start-comfyuiコマンドを実行してください。\n\`\`\`${serverId}\`\`\``,
                 ephemeral: true
             }
         );
 
-        // sshで接続し、cd /var/www/cloneComfyUi/ docker compose up --detachを実行
-        const param = getSshParam(serverInfo);
-        const ssh = new SshClient(param);
-        await ssh.connect();
-        // comfyuiの起動を確認
-        const resDockerPs = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
-        // outputにmycomfyuiという文字列があれば起動していると判断
-        if (resDockerPs.output.includes('mycomfyui')){
-            await interaction.followUp({
-                content: `comfyUiはすでに起動しています。https:/${comfyuiDomain}\n起動して２分ほどかかります。`,
-                ephemeral: false
-            });
-            return;
-        }
-
-        const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
-        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
-        console.log(sshRes);
-        await ssh.disconnect();
-
-        await interaction.followUp({
-            content: `comfyUiを起動しました。https://${comfyuiDomain}\n２分ほどかかります。`,
-            ephemeral: false
-        });
+        // // sshで接続し、cd /var/www/cloneComfyUi/ docker compose up --detachを実行
+        // const param = getSshParam(serverInfo);
+        // const ssh = new SshClient(param);
+        // await ssh.connect();
+        // // comfyuiの起動を確認
+        // const resDockerPs = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
+        // // outputにmycomfyuiという文字列があれば起動していると判断
+        // if (resDockerPs.output.includes('mycomfyui')){
+        //     await interaction.followUp({
+        //         content: `comfyUiはすでに起動しています。https:/${comfyuiDomain}\n起動して２分ほどかかります。`,
+        //         ephemeral: false
+        //     });
+        //     return;
+        // }
+        //
+        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
+        // // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
+        // console.log(sshRes);
+        // await ssh.disconnect();
+        //
+        // await interaction.followUp({
+        //     content: `comfyUiを起動しました。https://${comfyuiDomain}\n２分ほどかかります。`,
+        //     ephemeral: false
+        // });
     },
 };

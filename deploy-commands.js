@@ -10,7 +10,7 @@ const path = require('node:path');
 
 const commands = [];
 const productionCommands = [
-    'list','start','stop','info','status'
+    'list','start','stop','info','status','start-comfyui'
 ];
 // Grab all the command folders from the commands directory you created earlier
 const foldersPath = path.join(__dirname, 'commands');

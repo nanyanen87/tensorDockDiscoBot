@@ -72,8 +72,8 @@ Ready! Logged in as tensordock-bot#8212
 - /ping：ボットがオンラインであることを確認します。
 - /test：tensorDock につながるか確認します。
 - /list：TensorDock に登録されているモデルの一覧を表示します。
-- /start server_id：TensorDock に登録されているモデルを起動します。
-- /stop：server_id:TensorDock に登録されているモデルを停止します。
-- /info server_id：TensorDock に登録されているモデルの詳細情報を表示します。
+- /start serverId：TensorDock に登録されているモデルを起動します。
+- /stop：serverId:TensorDock に登録されているモデルを停止します。
+- /info serverId：TensorDock に登録されているモデルの詳細情報を表示します。
 
 ---
