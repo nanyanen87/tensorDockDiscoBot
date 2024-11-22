@@ -25,6 +25,7 @@ module.exports = {
             serverInfo = serverDB.getServer(serverId);
         }
 
+        const serverIsRunning = serverInfo.status === 'Running';
         // const startParam = {
         //     server: serverInfo.hostnode,
         //     gpu_model: serverInfo.specs.gpu.type,
@@ -39,6 +40,13 @@ module.exports = {
         //     await interaction.reply(`リソースの取得に失敗しました。\n${res.error}`);
         //     return;
         // }
+        if (serverIsRunning){
+            await interaction.followUp({
+                content: `serverはすでに起動しています。\n\`\`\`${serverId}\`\`\``,
+                ephemeral: false
+            });
+            return;
+        }
 
 
         // start
@@ -53,7 +61,7 @@ module.exports = {
         }
         await interaction.followUp(
             {
-                content: `serverがstartしました...start-comfyuiコマンドを実行してください。\n\`\`\`${serverId}\`\`\``,
+                content: `serverがstartしました...立ち上がるまでしばらくお待ち下さい。https://${comfyuiDomain}`,
                 ephemeral: false
             }
         );

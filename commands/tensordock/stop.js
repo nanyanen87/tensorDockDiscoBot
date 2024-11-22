@@ -55,7 +55,10 @@ module.exports = {
             return;
         } else {
             // サーバーは停止している
-            await interaction.followUp(`serverを停止してします...リソースを解放します。`);
+            await interaction.followUp(`serverを停止しました！\n\`\`\`${serverId}\`\`\``);
+            // dbの情報を削除
+            serverDB.deleteServer(serverId);
+
             // リソースを開放する //todo apiが壊れているためコメントアウト
             // const modifyRes = await tensordock.modify(stopParam);
             // if (modifyRes.success === true){
