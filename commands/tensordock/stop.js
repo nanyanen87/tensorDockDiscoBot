@@ -8,11 +8,18 @@ module.exports = {
         .setName('stop')
         .addStringOption(option => option.setName('server_id').setDescription('server_id').setRequired(true))
         .setDescription('serverをstopします。'),
-    async execute(interaction) {
-        interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
+    async execute(interaction, serverId = null) {
+        if (interaction.replied || interaction.deferred) {
+
+        } else {
+            interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
+        }
 
         const tensordock = new TensorDock();
-        const serverId = interaction.options.getString('server_id');
+        // serverIdが指定されていない場合はinteractionから取得
+        if (serverId === null){
+            serverId = interaction.options.getString('server_id');
+        }
         // db　にidがあるか確認し、あればそこから取得なければtensordockから取得
         const serverDB = new ServerDB();
         let serverInfo;
@@ -49,26 +56,26 @@ module.exports = {
         } else {
             // サーバーは停止している
             await interaction.followUp(`serverを停止してします...リソースを解放します。`);
-            // リソースを開放する
-            const modifyRes = await tensordock.modify(stopParam);
-            if (modifyRes.success === true){
-                await interaction.followUp({
-                    content: `serverを停止しました...リソースを解放しました。\n\`\`\`${serverId}\`\`\``,
-                    ephemeral: false,
-                });
-                return;
-            } else {
-                // 開放に失敗した場合
-                // 管理者にメッセージを送信
-                // const user = await interaction.client.users.fetch(myDiscordId);
-                // const dashboardUrl = `https://dashboard.tensordock.com/manage/${serverId}/`;
-                // await user.send(`リソースの解放に失敗しました。\n ${modifyRes.error} \n serverId: ${serverId}` + `\n dashboard: ${dashboardUrl}`);
-                await interaction.followUp({
-                    content: `リソースの解放に失敗しました。${modifyRes.error}`,
-                    ephemeral: false,
-                });
-                return;
-            }
+            // リソースを開放する //todo apiが壊れているためコメントアウト
+            // const modifyRes = await tensordock.modify(stopParam);
+            // if (modifyRes.success === true){
+            //     await interaction.followUp({
+            //         content: `serverを停止しました...リソースを解放しました。\n\`\`\`${serverId}\`\`\``,
+            //         ephemeral: false,
+            //     });
+            //     return;
+            // } else {
+            //     // 開放に失敗した場合
+            //     // 管理者にメッセージを送信
+            //     // const user = await interaction.client.users.fetch(myDiscordId);
+            //     // const dashboardUrl = `https://dashboard.tensordock.com/manage/${serverId}/`;
+            //     // await user.send(`リソースの解放に失敗しました。\n ${modifyRes.error} \n serverId: ${serverId}` + `\n dashboard: ${dashboardUrl}`);
+            //     await interaction.followUp({
+            //         content: `リソースの解放に失敗しました。${modifyRes.error}`,
+            //         ephemeral: false,
+            //     });
+            //     return;
+            // }
         }
     },
 };

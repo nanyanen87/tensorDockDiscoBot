@@ -3,6 +3,7 @@ const { TensorDock,getSshParam } = require('../../lib/tensordock.js');
 const {SshClient} = require("../../lib/ssh");
 const {ServerDB} = require("../../lib/db");
 const comfyuiDomain = process.env.COMFYUI_DOMAIN;
+const comfyuiPath = process.env.COMFYUI_PATH;
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -29,11 +30,16 @@ module.exports = {
         // start
         const ssh = new SshClient(param);
         await ssh.connect();
+        // main.py version
+        const sshRes = await ssh.execute('ps aux | grep main.py');
+        const isRunning = sshRes.output.includes('main.py');
+        // docker container version
+        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && docker ps');
+        // const isRunning = sshRes.output.includes('myconfyui');
+        await ssh.disconnect();
 
         // comfyuiの起動を確認
-        const resDockerPs = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
-        // outputにmycomfyuiという文字列があれば起動していると判断
-        if (resDockerPs.output.includes('mycomfyui')){
+        if (isRunning){
             await interaction.followUp({
                 content: `comfyUiはすでに起動しています。https://${comfyuiDomain}\n起動して２分ほどかかります。`,
                 ephemeral: false
@@ -41,12 +47,11 @@ module.exports = {
             return;
         }
 
-        const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
-        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
-        await ssh.disconnect();
+        // const sshRes2 = await ssh.execute(`export PATH=$PATH:/usr/bin && cd ${comfyuiPath} && nohup docker compose up --detach > /dev/null 2>&1 &`); // backgroundで実行
+        const sshRes2 = await ssh.execute(`export PATH=$PATH:/usr/bin && nohup python3 ${comfyuiPath}/ComfyUI/main.py --detach > /dev/null 2>&1 &`); // backgroundで実行
 
         await interaction.followUp({
-            content: `comfyUiを起動しました。https://${comfyuiDomain}\n２分ほどかかります。`,
+            content: `comfyUiを起動しました。https://${comfyuiDomain}\n。`,
             ephemeral: false
         });
     },

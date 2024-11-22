@@ -21,7 +21,10 @@ const client = new Client(
 );
 
 // commandのデプロイ
-require('./deploy-commands.js');
+
+if (env === 'prod') {
+    require('./deploy-commands.js');
+}
 
 
 
@@ -53,6 +56,11 @@ for (const folder of commandFolders) {
     }
 }
 
+
+// serverの情報を保持する変数、serverId->isRunning,timerId
+
+const timers = new Map();
+
 client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isChatInputCommand()) return;
     const command = interaction.client.commands.get(interaction.commandName);
@@ -60,6 +68,32 @@ client.on(Events.InteractionCreate, async interaction => {
     if (!command) {
         console.error(`No command matching ${interaction.commandName} was found.`);
         return;
+    }
+    const timeLimit = 1000 * 60 * 60; // 1時間
+    // startから一定時間でstopで実行する
+    if (interaction.commandName === 'start') {
+        const serverId = interaction.options.getString('server_id');
+        clearTimeout(timers.get(serverId));
+        const timerId = setTimeout(() => {
+            // 引数にserverIdを渡してstopコマンドを実行
+            client.commands.get('stop').execute(interaction,serverId)
+        }, timeLimit); // 1時間後
+        timers.set(serverId, timerId);
+    } else if (interaction.commandName === 'stop') {
+        const serverId = interaction.options.getString('server_id');
+        clearTimeout(timers.get(serverId));
+    } else if (interaction.commandName === 'extend') {
+        // timersから起動中のserverIdを取得
+        const serverId = interaction.options.getString('server_id');
+        const timerId = timers.get(serverId);
+        // 1時間延長
+        clearTimeout(timerId);
+        const newTimerId = setTimeout(() => {
+            client.commands.get('stop').execute(interaction,serverId)
+                .then(() => console.log('サーバーを自動停止しました。'))
+                .catch(error => console.error('サーバーの自動停止に失敗しました。', error));
+        }, timeLimit); // 1時間後
+        timers.set(serverId, newTimerId);
     }
 
     try {

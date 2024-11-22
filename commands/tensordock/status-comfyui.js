@@ -3,12 +3,13 @@ const { TensorDock,getSshParam } = require('../../lib/tensordock.js');
 const {SshClient} = require("../../lib/ssh");
 const {ServerDB} = require("../../lib/db");
 const comfyuiDomain = process.env.COMFYUI_DOMAIN;
+const comfyuiPath = process.env.COMFYUI_PATH;
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('status-comfyui')
         .addStringOption(option => option.setName('server_id').setDescription('server_id').setRequired(true))
-        .setDescription('docker psを実行します。'),
+        .setDescription('comfyuiの状態を確認します。'),
     async execute(interaction) {
         interaction.reply({ content: '処理中...', ephemeral: false }); // まず応答を返す
 
@@ -26,17 +27,25 @@ module.exports = {
         const param = getSshParam(serverInfo);
         const ssh = new SshClient(param);
         await ssh.connect();
-        const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
-        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
+
+        // main.py version
+        const sshRes = await ssh.execute('ps aux | grep main.py');
+        const isRunning = sshRes.output.includes('main.py');
+
+        // docker container version
+        // const sshRes = await ssh.execute('docker ps');
+        // const isRunning = sshRes.output.includes('mycomfyui');
+
+        await ssh.disconnect();
+
         // outputにmycomfyuiという文字列があれば起動していると判断
-        if (sshRes.output.includes('mycomfyui')){
+        if (isRunning){
             await interaction.followUp({
-                content: `comfyUiはすでに起動しています。https://${comfyuiDomain}\n起動して２分ほどかかります。`,
+                content: `comfyUiはすでに起動しています。https://${comfyuiDomain}\n`,
                 ephemeral: false
             });
             return;
         }
-        await ssh.disconnect();
         const res = JSON.stringify(sshRes);
         await interaction.followUp({
             content: `comfyuiは起動していません、startコマンドを実行してください。\n\`\`\`${res}\`\`\``,

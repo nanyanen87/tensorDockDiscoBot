@@ -53,33 +53,34 @@ module.exports = {
         }
         await interaction.followUp(
             {
-                content: `startしました...start-comfyuiコマンドを実行してください。\n\`\`\`${serverId}\`\`\``,
+                content: `serverがstartしました...start-comfyuiコマンドを実行してください。\n\`\`\`${serverId}\`\`\``,
                 ephemeral: false
             }
         );
+        // systemdで起動するからいらない↓
 
         // // sshで接続し、cd /var/www/cloneComfyUi/ docker compose up --detachを実行
         // const param = getSshParam(serverInfo);
         // const ssh = new SshClient(param);
         // await ssh.connect();
-        // // comfyuiの起動を確認
-        // const resDockerPs = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker ps');
-        // // outputにmycomfyuiという文字列があれば起動していると判断
-        // if (resDockerPs.output.includes('mycomfyui')){
+        //  comfyuiの起動を確認
+        //
+        // const resDockerPs = await ssh.execute('ps aux | grep python3');
+        // // outputにmain.pyという文字列があれば起動していると判断
+        // if (resDockerPs.output.includes('main.py')){
         //     await interaction.followUp({
-        //         content: `comfyUiはすでに起動しています。https://${comfyuiDomain}\n起動して２分ほどかかります。`,
+        //         content: `comfyUiはすでに起動しています。https://${comfyuiDomain}\n`,
         //         ephemeral: false
         //     });
         //     return;
         // }
-        //
-        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && nohup docker compose up --detach > /dev/null 2>&1 &'); // backgroundで実行
-        // // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && cd /var/www/MyComfyUI/ && docker compose up');
+        // //
+        // const sshRes = await ssh.execute('export PATH=$PATH:/usr/bin && nohup python3 /var/www/myComfyUI/ComfyUI/main.py --detach > /dev/null 2>&1 &'); // backgroundで実行
         // console.log(sshRes);
         // await ssh.disconnect();
         //
         // await interaction.followUp({
-        //     content: `comfyUiを起動しました。https://${comfyuiDomain}\n２分ほどかかります。`,
+        //     content: `comfyUiを起動しました。https://${comfyuiDomain}`,
         //     ephemeral: false
         // });
     },
